@@ -22,19 +22,19 @@ class SoclessPackager {
     const config = this.serverless.service.custom.soclessPackager
 
     if ( !config ) {
-      this.error("No serverless-package-python-functions configuration detected. Please see documentation")
+      this.error("No socless_integration_packager configuration detected. Please see documentation")
     }
     this.requirementsFile = config.requirementsFile || 'requirements.txt'
     config.buildDir ? this.buildDir = config.buildDir : this.error("No buildDir configuration specified")
-    this.globalRequirements = config.globalRequirements || []
-    this.globalIncludes = config.globalIncludes || []
+    this.globalRequirements = config.globalRequirements || ["./functions/requirements.txt"]
+    this.globalIncludes = config.globalIncludes || ["./common_files"]
     config.cleanup === undefined ? this.cleanup = true : this.cleanup = config.cleanup
-    this.useDocker = config.useDocker || false
+    this.useDocker = config.useDocker || true
     this.dockerImage = config.dockerImage || `lambci/lambda:build-${this.serverless.service.provider.runtime}`
-    this.containerName = config.containerName || 'serverless-package-python-functions'
+    this.containerName = config.containerName || 'socless_integration_packager'
     this.mountSSH = config.mountSSH || false
     this.dockerEnvs = config.dockerEnvs || []
-    this.abortOnPackagingErrors = config.abortOnPackagingErrors || false
+    this.abortOnPackagingErrors = config.abortOnPackagingErrors || true
     this.dockerServicePath = '/var/task'
   }
 
@@ -109,7 +109,7 @@ class SoclessPackager {
   runProcess(cmd,args){
     const ret = ChildProcess.spawnSync(cmd,args)
     if (ret.error){
-      throw new this.serverless.classes.Error(`[serverless-package-python-functions] ${ret.error.message}`)
+      throw new this.serverless.classes.Error(`[socless_integration_packager] ${ret.error.message}`)
     }
 
     const out = ret.stdout.toString()
@@ -204,21 +204,28 @@ class SoclessPackager {
   makePackage(target){
     this.log(`Packaging ${target.name}...`)
     const buildPath = Path.join(this.buildDir, target.name)
-    const requirementsPath = Path.join(buildPath,this.requirementsFile)
+    const requirementsPath = Path.join(buildPath, this.requirementsFile)
     // Create package directory and package files
     Fse.ensureDirSync(buildPath)
     // Copy includes
     let includes = target.includes || []
     includes = includes.concat(this.globalIncludes)
 
-    includes.forEach((item) => { Fse.copySync(item, buildPath) } )
+    includes.forEach((item) => { 
+      if (Fse.existsSync(item)){
+        Fse.copySync(item, buildPath) 
+      }
+    })
 
     // Install requirements
     let requirementsFiles = [requirementsPath]
-    
     requirementsFiles = requirementsFiles.concat(this.globalRequirements)
     
-    requirementsFiles.forEach((req) => { this.installRequirements(buildPath, req) })
+    requirementsFiles.forEach((req) => { 
+      if (Fse.existsSync(req)){
+        this.installRequirements(buildPath, req) 
+      }
+    })
     zipper.sync.zip(buildPath).compress().save(`${buildPath}.zip`)
   }
 
@@ -227,8 +234,8 @@ class SoclessPackager {
   constructor(serverless, options) {
     this.serverless = serverless;
     this.options = options;
-    this.log = (msg) => { this.serverless.cli.log(`[serverless-package-python-functions] ${msg}`) }
-    this.error = (msg) => { throw new Error(`[serverless-package-python-functions] ${msg}`) }
+    this.log = (msg) => { this.serverless.cli.log(`[socless_integration_packager] ${msg}`) }
+    this.error = (msg) => { throw new Error(`[socless_integration_packager] ${msg}`) }
 
 
 
