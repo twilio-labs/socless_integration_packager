@@ -1,0 +1,41 @@
+{
+  "name": "socless_integration_packager",
+  "version": "0.1.0",
+  "description": "Serverless Framework plugin to download dependencies, package, and zip SOCless python integrations for deployment to AWS",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Ubani Balogun",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "fs-extra": "^3.0.0",
+    "lodash": "^4.17.11",
+    "upath": "^1.1.0",
+    "readline-sync": "^1.4.10",
+    "zip-local": "^0.3.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio-labs/socless_integration_packager.git"
+  },
+  "keywords": [
+    "serverless",
+    "framework",
+    "plugin",
+    "socless",
+    "applications",
+    "aws",
+    "lambda",
+    "amazon",
+    "web",
+    "services",
+    "python",
+    "pip",
+    "requirements",
+    "docker"
+  ],
+  "bugs": {
+    "url": "https://github.com/twilio-labs/socless_integration_packager/issues"
+  },
+  "homepage": "https://github.com/twilio-labs/socless_integration_packager#readme"
+}
