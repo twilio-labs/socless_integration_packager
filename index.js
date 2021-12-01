@@ -121,7 +121,9 @@ class SoclessPackager {
       if (this.abortOnPackagingErrors){
         const countErrorNewLines = errorText.split('\n').length
 
-        if(!errorText.includes("ERROR:") && countErrorNewLines < 2 && errorText.toLowerCase().includes('git clone')){
+        if(!errorText.includes("ERROR:") && 
+           ((countErrorNewLines < 2 && errorText.toLowerCase().includes('git clone')) ||
+             (countErrorNewLines < 3 && errorText.toLowerCase().includes('git checkout')))) {
           // Ignore false positive due to pip git clone printing to stderr
         } else if(errorText.toLowerCase().includes('warning') && !errorText.toLowerCase().includes('error')){
           // Ignore warnings
