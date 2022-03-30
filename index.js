@@ -29,7 +29,7 @@ class SoclessPackager {
     this.globalRequirements = config.globalRequirements || ["./functions/requirements.txt"]
     this.globalIncludes = config.globalIncludes || ["./common_files"]
     config.cleanup === undefined ? this.cleanup = true : this.cleanup = config.cleanup
-    this.useDocker = config.useDocker || true
+    config.useDocker === undefined ? this.useDocker = true : this.useDocker = config.useDocker
     this.dockerImage = config.dockerImage || `lambci/lambda:build-${this.serverless.service.provider.runtime}`
     this.containerName = config.containerName || 'socless_integration_packager'
     this.mountSSH = config.mountSSH || false
