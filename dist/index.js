@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var bluebird_1 = __importDefault(require("bluebird"));
+var lodash_1 = __importDefault(require("lodash"));
 var fs_extra_1 = __importDefault(require("fs-extra"));
 var path_1 = __importDefault(require("path"));
 var child_process_1 = __importDefault(require("child_process"));
@@ -85,7 +86,6 @@ var SoclessPackager = /** @class */ (function () {
     };
     SoclessPackager.prototype.autoconfigArtifacts = function () {
         var _this = this;
-        // TODO: confirm these two functions have the same effect
         Object.entries(this.serverless.service.functions).map(function (_a) {
             var slsFuncName = _a[0], funcConfig = _a[1];
             var autoArtifact = "".concat(_this.config.buildDir, "/").concat(funcConfig.name, ".zip");
@@ -116,13 +116,14 @@ var SoclessPackager = /** @class */ (function () {
         return true;
     };
     SoclessPackager.prototype.selectAll = function () {
-        // TODO: confirm these two functions have the same outcome. TS did not like the first one (written in olddd JS)
-        // const functions = _.reject(this.serverless.service.functions, (target) => {
-        //   return target.runtime && !(target.runtime + "").match(/python/i);
-        // });
-        var functions = Object.values(this.serverless.service.functions).filter(function (target) {
-            return target.runtime !== undefined && target.runtime.includes("python");
+        // TODO: typescript doesn't like the original function, but the replacement isn't working yet
+        ///!      because it doesnt select ANY functions
+        var functions = lodash_1.default.reject(this.serverless.service.functions, function (target) {
+            return target.runtime && !(target.runtime + "").match(/python/i);
         });
+        // const functions = Object.values(this.serverless.service.functions).filter((target) => {
+        //   return target.runtime !== undefined && target.runtime.includes("python");
+        // });
         var info = functions.map(function (target) {
             var tgtPackage = target.package || {};
             return {

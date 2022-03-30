@@ -108,13 +108,15 @@ class SoclessPackager {
   }
 
   autoconfigArtifacts() {
-    // TODO: confirm these two functions have the same effect
+    // TODO: get confirmation that these work the same. It doesn't throw errors though.
+    //! Typescript doesn't like the original function
     Object.entries(this.serverless.service.functions).map(([slsFuncName, funcConfig]) => {
       const autoArtifact = `${this.config.buildDir}/${funcConfig.name}.zip`;
       funcConfig.package = funcConfig.package || {};
       funcConfig.package.artifact = funcConfig.package.artifact || autoArtifact;
       this.serverless.service.functions[slsFuncName] = funcConfig;
     });
+
     // _.map(this.serverless.service.functions, (func_config, func_name) => {
     //   let autoArtifact = `${this.config.buildDir}/${func_config.name}.zip`;
     //   func_config.package.artifact = func_config.package.artifact || autoArtifact;
@@ -142,14 +144,15 @@ class SoclessPackager {
   }
 
   selectAll() {
-    // TODO: confirm these two functions have the same outcome. TS did not like the first one (written in olddd JS)
-    // const functions = _.reject(this.serverless.service.functions, (target) => {
-    //   return target.runtime && !(target.runtime + "").match(/python/i);
-    // });
-
-    const functions = Object.values(this.serverless.service.functions).filter((target) => {
-      return target.runtime !== undefined && target.runtime.includes("python");
+    // TODO: typescript doesn't like the original function, but the replacement isn't working yet
+    ///!      because it doesnt select ANY functions
+    const functions = _.reject(this.serverless.service.functions, (target) => {
+      return target.runtime && !(target.runtime + "").match(/python/i);
     });
+
+    // const functions = Object.values(this.serverless.service.functions).filter((target) => {
+    //   return target.runtime !== undefined && target.runtime.includes("python");
+    // });
 
     const info = functions.map((target) => {
       const tgtPackage = target.package || {};
